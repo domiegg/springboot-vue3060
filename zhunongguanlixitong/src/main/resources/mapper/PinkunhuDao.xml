@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.PinkunhuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.gongzuorenyuan_id as gongzuorenyuanId
+        ,a.pinkunhu_name as pinkunhuName
+        ,a.pinkunhu_phone as pinkunhuPhone
+        ,a.pinkunhu_address as pinkunhuAddress
+        ,a.pinkunhu_id_number as pinkunhuIdNumber
+        ,a.pinkunhu_photo as pinkunhuPhoto
+        ,a.sex_types as sexTypes
+        ,a.pinkunhu_email as pinkunhuEmail
+        ,a.pinkunhu_chengyuan_text as pinkunhuChengyuanText
+        ,a.yonghu_nianshouru as yonghuNianshouru
+        ,a.ewaishouru_types as ewaishouruTypes
+        ,a.yunshukunnan_types as yunshukunnanTypes
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.PinkunhuView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,gongzuorenyuan.gongzuorenyuan_name as gongzuorenyuanName
+        ,gongzuorenyuan.gongzuorenyuan_phone as gongzuorenyuanPhone
+        ,gongzuorenyuan.gongzuorenyuan_id_number as gongzuorenyuanIdNumber
+        ,gongzuorenyuan.gongzuorenyuan_photo as gongzuorenyuanPhoto
+        ,gongzuorenyuan.gongzuorenyuan_email as gongzuorenyuanEmail
+
+        FROM pinkunhu  a
+        left JOIN gongzuorenyuan gongzuorenyuan ON a.gongzuorenyuan_id = gongzuorenyuan.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test="params.gongzuorenyuanId != null and params.gongzuorenyuanId != ''">
+                and (
+                    a.gongzuorenyuan_id = #{params.gongzuorenyuanId}
+                )
+            </if>
+            <if test=" params.pinkunhuName != '' and params.pinkunhuName != null and params.pinkunhuName != 'null' ">
+                and a.pinkunhu_name like CONCAT('%',#{params.pinkunhuName},'%')
+            </if>
+            <if test=" params.pinkunhuPhone != '' and params.pinkunhuPhone != null and params.pinkunhuPhone != 'null' ">
+                and a.pinkunhu_phone like CONCAT('%',#{params.pinkunhuPhone},'%')
+            </if>
+            <if test=" params.pinkunhuAddress != '' and params.pinkunhuAddress != null and params.pinkunhuAddress != 'null' ">
+                and a.pinkunhu_address like CONCAT('%',#{params.pinkunhuAddress},'%')
+            </if>
+            <if test=" params.pinkunhuIdNumber != '' and params.pinkunhuIdNumber != null and params.pinkunhuIdNumber != 'null' ">
+                and a.pinkunhu_id_number like CONCAT('%',#{params.pinkunhuIdNumber},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test=" params.pinkunhuEmail != '' and params.pinkunhuEmail != null and params.pinkunhuEmail != 'null' ">
+                and a.pinkunhu_email like CONCAT('%',#{params.pinkunhuEmail},'%')
+            </if>
+            <if test=" params.pinkunhuChengyuanText != '' and params.pinkunhuChengyuanText != null and params.pinkunhuChengyuanText != 'null' ">
+                and a.pinkunhu_chengyuan_text like CONCAT('%',#{params.pinkunhuChengyuanText},'%')
+            </if>
+            <if test="params.yonghuNianshouruStart != null ">
+                <![CDATA[  and a.yonghu_nianshouru >= #{params.yonghuNianshouruStart}   ]]>
+            </if>
+            <if test="params.yonghuNianshouruEnd != null ">
+                <![CDATA[  and a.yonghu_nianshouru <= #{params.yonghuNianshouruEnd}   ]]>
+            </if>
+            <if test="params.ewaishouruTypes != null and params.ewaishouruTypes != ''">
+                and a.ewaishouru_types = #{params.ewaishouruTypes}
+            </if>
+            <if test="params.yunshukunnanTypes != null and params.yunshukunnanTypes != ''">
+                and a.yunshukunnan_types = #{params.yunshukunnanTypes}
+            </if>
+
+                <!-- 判断工作人员的id不为空 -->
+            <if test=" params.gongzuorenyuanIdNotNull != '' and params.gongzuorenyuanIdNotNull != null and params.gongzuorenyuanIdNotNull != 'null' ">
+                and a.gongzuorenyuan_id IS NOT NULL
+            </if>
+            <if test=" params.gongzuorenyuanName != '' and params.gongzuorenyuanName != null and params.gongzuorenyuanName != 'null' ">
+                and gongzuorenyuan.gongzuorenyuan_name like CONCAT('%',#{params.gongzuorenyuanName},'%')
+            </if>
+            <if test=" params.gongzuorenyuanPhone != '' and params.gongzuorenyuanPhone != null and params.gongzuorenyuanPhone != 'null' ">
+                and gongzuorenyuan.gongzuorenyuan_phone like CONCAT('%',#{params.gongzuorenyuanPhone},'%')
+            </if>
+            <if test=" params.gongzuorenyuanIdNumber != '' and params.gongzuorenyuanIdNumber != null and params.gongzuorenyuanIdNumber != 'null' ">
+                and gongzuorenyuan.gongzuorenyuan_id_number like CONCAT('%',#{params.gongzuorenyuanIdNumber},'%')
+            </if>
+            <if test=" params.gongzuorenyuanEmail != '' and params.gongzuorenyuanEmail != null and params.gongzuorenyuanEmail != 'null' ">
+                and gongzuorenyuan.gongzuorenyuan_email like CONCAT('%',#{params.gongzuorenyuanEmail},'%')
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

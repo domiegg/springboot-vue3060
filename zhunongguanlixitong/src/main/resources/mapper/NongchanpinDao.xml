@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.NongchanpinDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.pinkunhu_id as pinkunhuId
+        ,a.nongchanpin_name as nongchanpinName
+        ,a.nongchanpin_uuid_number as nongchanpinUuidNumber
+        ,a.nongchanpin_photo as nongchanpinPhoto
+        ,a.nongchanpin_address as nongchanpinAddress
+        ,a.nongchanpin_types as nongchanpinTypes
+        ,a.nongchanpin_kucun_number as nongchanpinKucunNumber
+        ,a.nongchanpin_caigou_jine as nongchanpinCaigouJine
+        ,a.nongchanpin_new_jine as nongchanpinNewJine
+        ,a.cangku_types as cangkuTypes
+        ,a.nongchanpin_content as nongchanpinContent
+        ,a.nongchanpin_delete as nongchanpinDelete
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.NongchanpinView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,pinkunhu.gongzuorenyuan_id as pinkunhuGongzuorenyuanId
+        ,pinkunhu.pinkunhu_name as pinkunhuName
+        ,pinkunhu.pinkunhu_phone as pinkunhuPhone
+        ,pinkunhu.pinkunhu_address as pinkunhuAddress
+        ,pinkunhu.pinkunhu_id_number as pinkunhuIdNumber
+        ,pinkunhu.pinkunhu_photo as pinkunhuPhoto
+        ,pinkunhu.pinkunhu_email as pinkunhuEmail
+        ,pinkunhu.pinkunhu_chengyuan_text as pinkunhuChengyuanText
+        ,pinkunhu.yonghu_nianshouru as yonghuNianshouru
+        ,pinkunhu.ewaishouru_types as ewaishouruTypes
+        ,pinkunhu.yunshukunnan_types as yunshukunnanTypes
+
+        FROM nongchanpin  a
+        left JOIN pinkunhu pinkunhu ON a.pinkunhu_id = pinkunhu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.pinkunhuIds != null">
+                and a.pinkunhu_id in
+                <foreach item="item" index="index" collection="params.pinkunhuIds" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.pinkunhuId != null and params.pinkunhuId != ''">
+                and (
+                    a.pinkunhu_id = #{params.pinkunhuId}
+                )
+            </if>
+            <if test=" params.nongchanpinName != '' and params.nongchanpinName != null and params.nongchanpinName != 'null' ">
+                and a.nongchanpin_name like CONCAT('%',#{params.nongchanpinName},'%')
+            </if>
+            <if test=" params.nongchanpinUuidNumber != '' and params.nongchanpinUuidNumber != null and params.nongchanpinUuidNumber != 'null' ">
+                and a.nongchanpin_uuid_number like CONCAT('%',#{params.nongchanpinUuidNumber},'%')
+            </if>
+            <if test=" params.nongchanpinAddress != '' and params.nongchanpinAddress != null and params.nongchanpinAddress != 'null' ">
+                and a.nongchanpin_address like CONCAT('%',#{params.nongchanpinAddress},'%')
+            </if>
+            <if test="params.nongchanpinTypes != null and params.nongchanpinTypes != ''">
+                and a.nongchanpin_types = #{params.nongchanpinTypes}
+            </if>
+            <if test="params.nongchanpinKucunNumberStart != null and params.nongchanpinKucunNumberStart != ''">
+                <![CDATA[  and a.nongchanpin_kucun_number >= #{params.nongchanpinKucunNumberStart}   ]]>
+            </if>
+            <if test="params.nongchanpinKucunNumberEnd != null and params.nongchanpinKucunNumberEnd != ''">
+                <![CDATA[  and a.nongchanpin_kucun_number <= #{params.nongchanpinKucunNumberEnd}   ]]>
+            </if>
+             <if test="params.nongchanpinKucunNumber != null and params.nongchanpinKucunNumber != ''">
+                and a.nongchanpin_kucun_number = #{params.nongchanpinKucunNumber}
+             </if>
+            <if test="params.nongchanpinCaigouJineStart != null ">
+                <![CDATA[  and a.nongchanpin_caigou_jine >= #{params.nongchanpinCaigouJineStart}   ]]>
+            </if>
+            <if test="params.nongchanpinCaigouJineEnd != null ">
+                <![CDATA[  and a.nongchanpin_caigou_jine <= #{params.nongchanpinCaigouJineEnd}   ]]>
+            </if>
+            <if test="params.nongchanpinNewJineStart != null ">
+                <![CDATA[  and a.nongchanpin_new_jine >= #{params.nongchanpinNewJineStart}   ]]>
+            </if>
+            <if test="params.nongchanpinNewJineEnd != null ">
+                <![CDATA[  and a.nongchanpin_new_jine <= #{params.nongchanpinNewJineEnd}   ]]>
+            </if>
+            <if test="params.cangkuTypes != null and params.cangkuTypes != ''">
+                and a.cangku_types = #{params.cangkuTypes}
+            </if>
+            <if test=" params.nongchanpinContent != '' and params.nongchanpinContent != null and params.nongchanpinContent != 'null' ">
+                and a.nongchanpin_content like CONCAT('%',#{params.nongchanpinContent},'%')
+            </if>
+            <if test="params.nongchanpinDeleteStart != null and params.nongchanpinDeleteStart != ''">
+                <![CDATA[  and a.nongchanpin_delete >= #{params.nongchanpinDeleteStart}   ]]>
+            </if>
+            <if test="params.nongchanpinDeleteEnd != null and params.nongchanpinDeleteEnd != ''">
+                <![CDATA[  and a.nongchanpin_delete <= #{params.nongchanpinDeleteEnd}   ]]>
+            </if>
+             <if test="params.nongchanpinDelete != null and params.nongchanpinDelete != ''">
+                and a.nongchanpin_delete = #{params.nongchanpinDelete}
+             </if>
+
+                <!-- 判断贫困户的id不为空 -->
+            <if test=" params.pinkunhuIdNotNull != '' and params.pinkunhuIdNotNull != null and params.pinkunhuIdNotNull != 'null' ">
+                and a.pinkunhu_id IS NOT NULL
+            </if>
+            <if test="params.gongzuorenyuanId != null  and params.gongzuorenyuanId != ''">
+                and pinkunhu.gongzuorenyuan_id = #{params.gongzuorenyuanId}
+            </if>
+            <if test=" params.pinkunhuName != '' and params.pinkunhuName != null and params.pinkunhuName != 'null' ">
+                and pinkunhu.pinkunhu_name like CONCAT('%',#{params.pinkunhuName},'%')
+            </if>
+            <if test=" params.pinkunhuPhone != '' and params.pinkunhuPhone != null and params.pinkunhuPhone != 'null' ">
+                and pinkunhu.pinkunhu_phone like CONCAT('%',#{params.pinkunhuPhone},'%')
+            </if>
+            <if test=" params.pinkunhuAddress != '' and params.pinkunhuAddress != null and params.pinkunhuAddress != 'null' ">
+                and pinkunhu.pinkunhu_address like CONCAT('%',#{params.pinkunhuAddress},'%')
+            </if>
+            <if test=" params.pinkunhuIdNumber != '' and params.pinkunhuIdNumber != null and params.pinkunhuIdNumber != 'null' ">
+                and pinkunhu.pinkunhu_id_number like CONCAT('%',#{params.pinkunhuIdNumber},'%')
+            </if>
+            <if test=" params.pinkunhuEmail != '' and params.pinkunhuEmail != null and params.pinkunhuEmail != 'null' ">
+                and pinkunhu.pinkunhu_email like CONCAT('%',#{params.pinkunhuEmail},'%')
+            </if>
+            <if test=" params.pinkunhuChengyuanText != '' and params.pinkunhuChengyuanText != null and params.pinkunhuChengyuanText != 'null' ">
+                and pinkunhu.pinkunhu_chengyuan_text like CONCAT('%',#{params.pinkunhuChengyuanText},'%')
+            </if>
+            <if test="params.yonghuNianshouruStart != null ">
+                <![CDATA[  and pinkunhu.yonghu_nianshouru >= #{params.yonghuNianshouruStart}   ]]>
+            </if>
+            <if test="params.yonghuNianshouruEnd != null ">
+                <![CDATA[  and pinkunhu.yonghu_nianshouru <= #{params.yonghuNianshouruEnd}   ]]>
+            </if>
+            <if test="params.ewaishouruTypes != null  and params.ewaishouruTypes != ''">
+                and pinkunhu.ewaishouru_types = #{params.ewaishouruTypes}
+            </if>
+
+            <if test="params.yunshukunnanTypes != null  and params.yunshukunnanTypes != ''">
+                and pinkunhu.yunshukunnan_types = #{params.yunshukunnanTypes}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

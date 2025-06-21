@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.NongchanpinXiaoshouDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.nongchanpin_xiaoshou_uuid_number as nongchanpinXiaoshouUuidNumber
+        ,a.gongzuorenyuan_id as gongzuorenyuanId
+        ,a.nongchanpin_id as nongchanpinId
+        ,a.buy_number as buyNumber
+        ,a.nongchanpin_xiaoshou_xiaoshouzonge as nongchanpinXiaoshouXiaoshouzonge
+        ,a.nongchanpin_xiaoshou_lirun as nongchanpinXiaoshouLirun
+        ,a.nongchanpin_xiaoshou_types as nongchanpinXiaoshouTypes
+        ,a.xiaoshou_time as xiaoshouTime
+        ,a.nongchanpin_xiaoshou_content as nongchanpinXiaoshouContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.NongchanpinXiaoshouView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,gongzuorenyuan.gongzuorenyuan_name as gongzuorenyuanName
+        ,gongzuorenyuan.gongzuorenyuan_phone as gongzuorenyuanPhone
+        ,gongzuorenyuan.gongzuorenyuan_id_number as gongzuorenyuanIdNumber
+        ,gongzuorenyuan.gongzuorenyuan_photo as gongzuorenyuanPhoto
+        ,gongzuorenyuan.gongzuorenyuan_email as gongzuorenyuanEmail
+        ,nongchanpin.pinkunhu_id as nongchanpinPinkunhuId
+        ,nongchanpin.nongchanpin_name as nongchanpinName
+        ,nongchanpin.nongchanpin_uuid_number as nongchanpinUuidNumber
+        ,nongchanpin.nongchanpin_photo as nongchanpinPhoto
+        ,nongchanpin.nongchanpin_address as nongchanpinAddress
+        ,nongchanpin.nongchanpin_types as nongchanpinTypes
+        ,nongchanpin.nongchanpin_kucun_number as nongchanpinKucunNumber
+        ,nongchanpin.nongchanpin_caigou_jine as nongchanpinCaigouJine
+        ,nongchanpin.nongchanpin_new_jine as nongchanpinNewJine
+        ,nongchanpin.cangku_types as cangkuTypes
+        ,nongchanpin.nongchanpin_content as nongchanpinContent
+        ,nongchanpin.nongchanpin_delete as nongchanpinDelete
+
+        FROM nongchanpin_xiaoshou  a
+        left JOIN gongzuorenyuan gongzuorenyuan ON a.gongzuorenyuan_id = gongzuorenyuan.id
+        left JOIN nongchanpin nongchanpin ON a.nongchanpin_id = nongchanpin.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.nongchanpinXiaoshouUuidNumber != '' and params.nongchanpinXiaoshouUuidNumber != null and params.nongchanpinXiaoshouUuidNumber != 'null' ">
+                and a.nongchanpin_xiaoshou_uuid_number like CONCAT('%',#{params.nongchanpinXiaoshouUuidNumber},'%')
+            </if>
+            <if test="params.gongzuorenyuanId != null and params.gongzuorenyuanId != ''">
+                and (
+                    a.gongzuorenyuan_id = #{params.gongzuorenyuanId}
+                )
+            </if>
+            <if test="params.nongchanpinId != null and params.nongchanpinId != ''">
+                and (
+                    a.nongchanpin_id = #{params.nongchanpinId}
+                )
+            </if>
+            <if test="params.buyNumberStart != null and params.buyNumberStart != ''">
+                <![CDATA[  and a.buy_number >= #{params.buyNumberStart}   ]]>
+            </if>
+            <if test="params.buyNumberEnd != null and params.buyNumberEnd != ''">
+                <![CDATA[  and a.buy_number <= #{params.buyNumberEnd}   ]]>
+            </if>
+             <if test="params.buyNumber != null and params.buyNumber != ''">
+                and a.buy_number = #{params.buyNumber}
+             </if>
+            <if test="params.nongchanpinXiaoshouXiaoshouzongeStart != null ">
+                <![CDATA[  and a.nongchanpin_xiaoshou_xiaoshouzonge >= #{params.nongchanpinXiaoshouXiaoshouzongeStart}   ]]>
+            </if>
+            <if test="params.nongchanpinXiaoshouXiaoshouzongeEnd != null ">
+                <![CDATA[  and a.nongchanpin_xiaoshou_xiaoshouzonge <= #{params.nongchanpinXiaoshouXiaoshouzongeEnd}   ]]>
+            </if>
+            <if test="params.nongchanpinXiaoshouLirunStart != null ">
+                <![CDATA[  and a.nongchanpin_xiaoshou_lirun >= #{params.nongchanpinXiaoshouLirunStart}   ]]>
+            </if>
+            <if test="params.nongchanpinXiaoshouLirunEnd != null ">
+                <![CDATA[  and a.nongchanpin_xiaoshou_lirun <= #{params.nongchanpinXiaoshouLirunEnd}   ]]>
+            </if>
+            <if test="params.nongchanpinXiaoshouTypes != null and params.nongchanpinXiaoshouTypes != ''">
+                and a.nongchanpin_xiaoshou_types = #{params.nongchanpinXiaoshouTypes}
+            </if>
+            <if test=" params.xiaoshouTimeStart != '' and params.xiaoshouTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.xiaoshou_time) >= UNIX_TIMESTAMP(#{params.xiaoshouTimeStart}) ]]>
+            </if>
+            <if test=" params.xiaoshouTimeEnd != '' and params.xiaoshouTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.xiaoshou_time) <= UNIX_TIMESTAMP(#{params.xiaoshouTimeEnd}) ]]>
+            </if>
+            <if test=" params.nongchanpinXiaoshouContent != '' and params.nongchanpinXiaoshouContent != null and params.nongchanpinXiaoshouContent != 'null' ">
+                and a.nongchanpin_xiaoshou_content like CONCAT('%',#{params.nongchanpinXiaoshouContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断工作人员的id不为空 -->
+            <if test=" params.gongzuorenyuanIdNotNull != '' and params.gongzuorenyuanIdNotNull != null and params.gongzuorenyuanIdNotNull != 'null' ">
+                and a.gongzuorenyuan_id IS NOT NULL
+            </if>
+            <if test=" params.gongzuorenyuanName != '' and params.gongzuorenyuanName != null and params.gongzuorenyuanName != 'null' ">
+                and gongzuorenyuan.gongzuorenyuan_name like CONCAT('%',#{params.gongzuorenyuanName},'%')
+            </if>
+            <if test=" params.gongzuorenyuanPhone != '' and params.gongzuorenyuanPhone != null and params.gongzuorenyuanPhone != 'null' ">
+                and gongzuorenyuan.gongzuorenyuan_phone like CONCAT('%',#{params.gongzuorenyuanPhone},'%')
+            </if>
+            <if test=" params.gongzuorenyuanIdNumber != '' and params.gongzuorenyuanIdNumber != null and params.gongzuorenyuanIdNumber != 'null' ">
+                and gongzuorenyuan.gongzuorenyuan_id_number like CONCAT('%',#{params.gongzuorenyuanIdNumber},'%')
+            </if>
+            <if test=" params.gongzuorenyuanEmail != '' and params.gongzuorenyuanEmail != null and params.gongzuorenyuanEmail != 'null' ">
+                and gongzuorenyuan.gongzuorenyuan_email like CONCAT('%',#{params.gongzuorenyuanEmail},'%')
+            </if>
+                <!-- 判断农产品的id不为空 -->
+            <if test=" params.nongchanpinIdNotNull != '' and params.nongchanpinIdNotNull != null and params.nongchanpinIdNotNull != 'null' ">
+                and a.nongchanpin_id IS NOT NULL
+            </if>
+            <if test="params.pinkunhuId != null  and params.pinkunhuId != ''">
+                and nongchanpin.pinkunhu_id = #{params.pinkunhuId}
+            </if>
+            <if test=" params.nongchanpinName != '' and params.nongchanpinName != null and params.nongchanpinName != 'null' ">
+                and nongchanpin.nongchanpin_name like CONCAT('%',#{params.nongchanpinName},'%')
+            </if>
+            <if test=" params.nongchanpinUuidNumber != '' and params.nongchanpinUuidNumber != null and params.nongchanpinUuidNumber != 'null' ">
+                and nongchanpin.nongchanpin_uuid_number like CONCAT('%',#{params.nongchanpinUuidNumber},'%')
+            </if>
+            <if test=" params.nongchanpinAddress != '' and params.nongchanpinAddress != null and params.nongchanpinAddress != 'null' ">
+                and nongchanpin.nongchanpin_address like CONCAT('%',#{params.nongchanpinAddress},'%')
+            </if>
+            <if test="params.nongchanpinTypes != null  and params.nongchanpinTypes != ''">
+                and nongchanpin.nongchanpin_types = #{params.nongchanpinTypes}
+            </if>
+
+            <if test="params.nongchanpinKucunNumberStart != null  and params.nongchanpinKucunNumberStart != '' ">
+                <![CDATA[  and nongchanpin.nongchanpin_kucun_number >= #{params.nongchanpinKucunNumberStart}   ]]>
+            </if>
+            <if test="params.nongchanpinKucunNumberEnd != null  and params.nongchanpinKucunNumberEnd != '' ">
+                <![CDATA[  and nongchanpin.nongchanpin_kucun_number <= #{params.nongchanpinKucunNumberEnd}   ]]>
+            </if>
+            <if test="params.nongchanpinKucunNumber != null  and params.nongchanpinKucunNumber != '' ">
+                and nongchanpin.nongchanpin_kucun_number = #{params.nongchanpinKucunNumber}
+            </if>
+            <if test="params.nongchanpinCaigouJineStart != null ">
+                <![CDATA[  and nongchanpin.nongchanpin_caigou_jine >= #{params.nongchanpinCaigouJineStart}   ]]>
+            </if>
+            <if test="params.nongchanpinCaigouJineEnd != null ">
+                <![CDATA[  and nongchanpin.nongchanpin_caigou_jine <= #{params.nongchanpinCaigouJineEnd}   ]]>
+            </if>
+            <if test="params.nongchanpinNewJineStart != null ">
+                <![CDATA[  and nongchanpin.nongchanpin_new_jine >= #{params.nongchanpinNewJineStart}   ]]>
+            </if>
+            <if test="params.nongchanpinNewJineEnd != null ">
+                <![CDATA[  and nongchanpin.nongchanpin_new_jine <= #{params.nongchanpinNewJineEnd}   ]]>
+            </if>
+            <if test="params.cangkuTypes != null  and params.cangkuTypes != ''">
+                and nongchanpin.cangku_types = #{params.cangkuTypes}
+            </if>
+
+            <if test=" params.nongchanpinContent != '' and params.nongchanpinContent != null and params.nongchanpinContent != 'null' ">
+                and nongchanpin.nongchanpin_content like CONCAT('%',#{params.nongchanpinContent},'%')
+            </if>
+            <if test="params.nongchanpinDeleteStart != null  and params.nongchanpinDeleteStart != '' ">
+                <![CDATA[  and nongchanpin.nongchanpin_delete >= #{params.nongchanpinDeleteStart}   ]]>
+            </if>
+            <if test="params.nongchanpinDeleteEnd != null  and params.nongchanpinDeleteEnd != '' ">
+                <![CDATA[  and nongchanpin.nongchanpin_delete <= #{params.nongchanpinDeleteEnd}   ]]>
+            </if>
+            <if test="params.nongchanpinDelete != null  and params.nongchanpinDelete != '' ">
+                and nongchanpin.nongchanpin_delete = #{params.nongchanpinDelete}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
